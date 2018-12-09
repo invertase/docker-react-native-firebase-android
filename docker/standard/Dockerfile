@@ -79,6 +79,8 @@ ENV PATH=${PATH}:/opt/scripts/
 
 RUN adb start-server \
     && adb kill-server \
-    && cp -R ~/.android/. /opt/android/.android/.
+    && cp -R ~/.android/. /opt/android/.android/. \
+    && mkdir -p ~/.android/avd/$AVD_NAME.avd \
+    && cp /opt/android/.android/avd/$AVD_NAME.avd/config.ini ~/.android/avd/$AVD_NAME.avd/config.ini
 
 RUN rm -rf /opt/android/.android/cache
