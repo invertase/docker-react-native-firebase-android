@@ -2,6 +2,6 @@
   "scripts": {
     "build:standard": "docker build -t invertase/react-native-firebase-android:standard docker/standard/",
     "publish:standard": "docker push invertase/react-native-firebase-android:standard",
-    "build:publish": "npm run build:standard && publish:standard"
+    "build:publish": "npm run build:standard && npm run publish:standard"
   }
 }

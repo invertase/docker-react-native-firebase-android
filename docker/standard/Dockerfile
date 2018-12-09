@@ -59,19 +59,22 @@ RUN sdkmanager "platforms;android-$ANDROID_COMPILE_SDK_VERSION"
 ARG ANDROID_BUILD_TOOLS_VERSION=28.0.2
 RUN sdkmanager "build-tools;$ANDROID_BUILD_TOOLS_VERSION"
 
-ARG EMULATOR_API=27
-ENV AVD_PACKAGE="system-images;android-${EMULATOR_API};google_apis_playstore;x86"
-RUN sdkmanager "${AVD_PACKAGE}"
+ARG EMULATOR_API=25
+ENV AVD_PACKAGE="system-images;android-${EMULATOR_API};google_apis;armeabi-v7a"
+RUN sdkmanager "${AVD_PACKAGE}" "emulator"
 
 ARG AVD_NAME="TestingAVD"
 ENV AVD_NAME="${AVD_NAME}"
 RUN  mkdir -p ~/.android \
      && touch ~/.android/repositories.cfg \
-     && sdkmanager "$AVD_PACKAGE" \
-     && echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis_playstore --abi "x86"
+     && echo no | avdmanager create avd --name "$AVD_NAME" --device "Nexus 5X" --force --package "$AVD_PACKAGE" --tag google_apis --abi "armeabi-v7a"
 
 COPY scripts /opt/scripts
 ENV PATH=${PATH}:/opt/scripts/
+
+#RUN avd-launch \
+#    && avd-wait-ready \
+#    && avd-snapshot
 
 # Detox patch
 RUN adb start-server \
@@ -81,8 +84,6 @@ RUN adb start-server \
     && echo "hw.lcd.height=1920" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
     && echo "hw.lcd.width=1080" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
     && cp /opt/android/.android/avd/$AVD_NAME.avd/config.ini ~/.android/avd/$AVD_NAME.avd/config.ini
-
-RUN avd-launch & avd-wait-ready && avd-snapshot
 
 RUN rm -rf /opt/android/.android/cache
 RUN adduser root libvirt && adduser root libvirt-qemu
