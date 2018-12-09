@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "Waiting for AVD to be ready:"
+export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
+timeout 120 adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed) ]]; do sleep 1; done'
+
+# Disable Animations to improve performance
+adb shell "settings put global window_animation_scale 0.0"
+adb shell "settings put global transition_animation_scale 0.0"
+adb shell "settings put global animator_duration_scale 0.0"
+
+echo "Device is ready!"
