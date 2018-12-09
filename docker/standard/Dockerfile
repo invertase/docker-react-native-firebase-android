@@ -70,17 +70,19 @@ RUN  mkdir -p ~/.android \
      && sdkmanager "$AVD_PACKAGE" \
      && echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGE" --tag google_apis_playstore --abi "x86"
 
-# Detox patch
-RUN echo "hw.lcd.height=1920" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
-     && echo "hw.lcd.width=1080" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini
-
 COPY scripts /opt/scripts
 ENV PATH=${PATH}:/opt/scripts/
 
+# Detox patch
 RUN adb start-server \
     && adb kill-server \
     && cp -R ~/.android/. /opt/android/.android/. \
     && mkdir -p ~/.android/avd/$AVD_NAME.avd \
+    && echo "hw.lcd.height=1920" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
+    && echo "hw.lcd.width=1080" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
     && cp /opt/android/.android/avd/$AVD_NAME.avd/config.ini ~/.android/avd/$AVD_NAME.avd/config.ini
 
+RUN avd-launch & avd-wait-ready && avd-snapshot
+
 RUN rm -rf /opt/android/.android/cache
+RUN adduser root libvirt && adduser root libvirt-qemu
