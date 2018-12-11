@@ -59,15 +59,15 @@ RUN sdkmanager "platforms;android-$ANDROID_COMPILE_SDK_VERSION"
 ARG ANDROID_BUILD_TOOLS_VERSION=28.0.2
 RUN sdkmanager "build-tools;$ANDROID_BUILD_TOOLS_VERSION"
 
-#ARG EMULATOR_API=25
-#ENV AVD_PACKAGE="system-images;android-${EMULATOR_API};google_apis;armeabi-v7a"
-#RUN sdkmanager "${AVD_PACKAGE}" "emulator"
-#
-#ARG AVD_NAME="TestingAVD"
-#ENV AVD_NAME="${AVD_NAME}"
-#RUN  mkdir -p ~/.android \
-#     && touch ~/.android/repositories.cfg \
-#     && echo no | avdmanager create avd --name "$AVD_NAME" --device "Nexus 5X" --force --package "$AVD_PACKAGE" --tag google_apis --abi "armeabi-v7a"
+ARG EMULATOR_API=25
+ENV AVD_PACKAGE="system-images;android-${EMULATOR_API};google_apis;armeabi-v7a"
+RUN sdkmanager "${AVD_PACKAGE}" "emulator"
+
+ARG AVD_NAME="TestingAVD"
+ENV AVD_NAME="${AVD_NAME}"
+RUN  mkdir -p ~/.android \
+     && touch ~/.android/repositories.cfg \
+     && echo no | avdmanager create avd --name "$AVD_NAME" --device "Nexus 5X" --force --package "$AVD_PACKAGE" --tag google_apis --abi "armeabi-v7a"
 
 COPY scripts /opt/scripts
 ENV PATH=${PATH}:/opt/scripts/
@@ -77,13 +77,13 @@ ENV PATH=${PATH}:/opt/scripts/
 #    && avd-snapshot
 
 # Detox patch
-#RUN adb start-server \
-#    && adb kill-server \
-#    && cp -R ~/.android/. /opt/android/.android/. \
-#    && mkdir -p ~/.android/avd/$AVD_NAME.avd \
-#    && echo "hw.lcd.height=1920" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
-#    && echo "hw.lcd.width=1080" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
-#    && cp /opt/android/.android/avd/$AVD_NAME.avd/config.ini ~/.android/avd/$AVD_NAME.avd/config.ini
+RUN adb start-server \
+    && adb kill-server \
+    && cp -R ~/.android/. /opt/android/.android/. \
+    && mkdir -p ~/.android/avd/$AVD_NAME.avd \
+    && echo "hw.lcd.height=1920" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
+    && echo "hw.lcd.width=1080" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini \
+    && cp /opt/android/.android/avd/$AVD_NAME.avd/config.ini ~/.android/avd/$AVD_NAME.avd/config.ini
 
 RUN rm -rf /opt/android/.android/cache
 #RUN adduser root libvirt && adduser root libvirt-qemu
