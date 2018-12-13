@@ -1,0 +1,20 @@
+#!/bin/bash
+echo "Creating AVD Device:"
+export PATH=$(dirname $(dirname $(command -v android)))/tools/bin:$PATH
+export PATH=$(dirname $(dirname $(command -v android)))/platform-tools:$PATH
+
+mkdir -p ~/.android
+touch ~/.android/repositories.cfg
+
+kvm-ok
+
+echo no | avdmanager create avd --name "$AVD_NAME" --device "Nexus 5X" --force --package "$AVD_PACKAGE" --tag google_apis --abi "x86"
+
+# Detox patch
+adb start-server
+adb kill-server
+cp -R ~/.android/. /opt/android/.android/.
+mkdir -p ~/.android/avd/$AVD_NAME.avd
+echo "hw.lcd.height=1920" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini
+echo "hw.lcd.width=1080" >> /opt/android/.android/avd/$AVD_NAME.avd/config.ini
+cp /opt/android/.android/avd/$AVD_NAME.avd/config.ini ~/.android/avd/$AVD_NAME.avd/config.ini

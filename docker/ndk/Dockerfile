@@ -15,3 +15,4 @@ ARG BUCK_VERSION=2018.10.29.01
 RUN curl -sS -L https://github.com/facebook/buck/releases/download/v${BUCK_VERSION}/buck.${BUCK_VERSION}_all.deb -o /tmp/buck.deb \
     && dpkg -i /tmp/buck.deb \
     && rm /tmp/buck.deb
+ENV PATH=${PATH}:/opt/buck/bin/
